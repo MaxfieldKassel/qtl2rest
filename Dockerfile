@@ -15,7 +15,7 @@ RUN apt-get update && \
         libssl-dev \
         libjemalloc-dev \
         zlib1g-dev \
-	supervisor && \
+	      supervisor && \
     install2.r -r http://www.rforge.net/ $R_FORGE_PKGS && \
     install2.r $R_CRAN_PKGS && \
     apt-get clean && \
@@ -32,7 +32,7 @@ RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
 
 # install the RestRserve, dependencies and qtl2
 RUN R -e 'install.packages("RestRserve")' \
- && R -e 'remotes::install_github("mattjvincent/memCompression")'
+ && R -e 'remotes::install_github("mattjvincent/memCompression")' \
  && R -e 'remotes::install_version("dbplyr", version = "2.1.1")' \
  && R -e 'remotes::install_version("pryr", version = "0.1.5")' \
  && R -e 'remotes::install_version("janitor", version = "2.1.0")' \

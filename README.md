@@ -1,23 +1,40 @@
-## rest2api
+# rest2api
 
-A Docker image for use with [qtl2api](https://github.com/churchill-lab/qtl2api).
+A Docker image for use with [qtl2api](https://github.com/churchill-lab/qtl2api). This image provides a RESTful API for interacting with a QTL analysis platform, allowing users to retrieve data, perform statistical analysis, and conduct genetic association studies.
+
+# Prerequisites
+
+The Docker image needs a file and a path to be mounted in the following locations:
+
+**/app/qtl2rest/data**
+ - By default, the image expects RData and Rds files to be present in this directory, which is mounted from the host machine **/data/rdata**. The RData and Rds files contain the datasets and other necessary information for the QTL analysis platform.
+
+**ccfoundersnps.sqlite** 
+- The image also expects a SQLite database file to be present in this directory, which is mounted from the host machine **/data/ccfoundersnps.sqlite**. This database file contains information about the founder strains and their genetic markers.
+
+# Building and Running the Docker Image (With Docker Compose)
+
+The Docker image can be built and run using Docker Compose. The `docker-compose.yml` file in this repository contains the necessary configuration for building and running the image.
+
+## Building and Running
+
+The following command will build and run the Docker image using Docker Compose.
+```
+docker-compose up --build 
+```
+(use -d to run in detached mode)
+```
+docker-compose up --build -d
+```
+
+# Building and Running the Docker Image (Without Docker Compose)
 
 ## Building
 
     docker build --progress plain -t churchilllab/qtl2rest .
 
-
 ## Running
 
-The Docker image needs a file and a path to be mounted in the following loctions:
-
-**/app/qtl2rest/data**
-
- - R data directory - this should have RData and Rds files
-
-**ccfoundersnps.sqlite** 
-
-- founder snps database
 
 The following command will start the Docker image.
 

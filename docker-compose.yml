@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  qtl2rest:
+    build: .
+    container_name: qtl2rest
+    ports:
+      - "8001:8001"
+    volumes: #You might need to change the path to the data folder
+      - data/rdata:/app/qtl2rest/data/rdata
+      - data/ccfoundersnps.sqlite:/app/qtl2rest/data/ccfounders.sqlite
+    networks:
+      - qtl2rest
+
+#This is the network that the qtl2rest container will use to communicate with other containers in the same network
+networks:
+  qtl2rest: 
+    driver: bridge
+
