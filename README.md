@@ -31,54 +31,125 @@ The following command will start the Docker image.
         churchilllab/qtl2rest
 ```
 
-## API
+# API Documentation
 
-The following API Endpoints will be available:
+This API facilitates interactions with a QTL analysis platform, providing endpoints for data retrieval, statistical analysis, and genetic association studies. Below is a detailed overview of the available endpoints, including input parameters and expected outputs.
 
-#### /envinfo
-- Get information about the files loaded and what elements they contain
+### General Information
 
-#### /markers
- - Get all the markers or markers for a chromosome
+- **Base URL**: The base URL for accessing the API endpoints will depend on the deployment environment. Replace `<base_url>` with the actual base URL of the API in the examples provided.
 
-#### /datasets
- - Get information about the datasets loaded
+### Endpoints
 
-#### /datasetsstats
- - Get statistic information about the datasets loaded
+#### GET `/envinfo`
+- **Description**: Retrieves information about the R environment, including loaded files and their elements.
+- **Inputs**: None.
+- **Outputs**: A list of files loaded into the environment, along with the elements they contain.
 
-#### /rankings
- - Get a ranking of gene annotations.  For use with SNP association.
+#### GET `/markers`
+- **Description**: Fetches all markers or markers for a specific chromosome.
+- **Inputs**: Optional query parameter `chrom` for filtering markers by chromosome.
+- **Outputs**: A list of markers, each including its location, allele information, and association data if filtered by chromosome.
 
-#### /idexists?id={id}&dataset={dataset}
- - See if the **id** exists in the viewer or dataset if **dataset** is supplied.
+#### GET `/datasets`
+- **Description**: Provides details on the datasets loaded into the environment.
+- **Inputs**: None.
+- **Outputs**: Information about each dataset, including name, type, annotations, sample sizes, and other metadata.
 
-#### /lodpeaks?dataset={dataset}
- - Get LOD peaks for the specified **dataset**.
+#### GET `/datasetsstats`
+- **Description**: Retrieves statistical information about the datasets loaded.
+- **Inputs**: None.
+- **Outputs**: Statistical summaries for each dataset, such as mean, median, variance, and standard deviation of key metrics.
 
-#### /lodscan?dataset={dataset}&id={id}&intcovar={covar}
- - Perform a LOD scan on the **id** in the **dataset**.  An optional interactive covariate can be specified (**covar**).
+#### GET `/rankings`
+- **Description**: Returns a ranking of gene annotations for use with SNP association.
+- **Inputs**: None.
+- **Outputs**: A list of gene annotations ranked based on their association strength, significance levels, and other relevant metrics.
 
-#### /lodscansamples?dataset={dataset}&id={id}&chrom={chromosome}&intcovar={covar}
- - Perform a LOD scan on the **id** in the **dataset** for a specific **chromosome**.  An interactive covariate must be specified (**covar**).  This will group samples by the **covar** and return a LOD scan for each unique **covar** value.
+#### GET `/idexists`
+- **Description**: Checks if an `id` exists in the viewer or a specified dataset.
+- **Inputs**:
+  - `id`: Identifier to check.
+  - `dataset` (optional): Dataset to check the `id` against.
+- **Outputs**: Boolean indicating the existence of the `id`.
 
-#### /expression?dataset={dataset}&id={id}
- - Get the expression data for the **id** in the **dataset**.
+#### GET `/lodpeaks`
+- **Description**: Fetches LOD peaks for a specified dataset.
+- **Inputs**: 
+  - `dataset`: Identifier of the dataset.
+- **Outputs**: A list of LOD peaks, each including its location, score, and associated markers.
 
-#### /snpassoc?dataset={dataset}&id={id}&chrom={chromosome}&location={location}&window_size={windowSize}
- - Perform a SNP association mapping for the specified **id**, **dataset**, **chromsome**, **location**, and **windowSize**.
+#### GET `/lodscan`
+- **Description**: Performs a LOD scan on an `id` in a dataset, optionally using an interactive covariate.
+- **Inputs**:
+  - `dataset`: Dataset identifier.
+  - `id`: Identifier for the genetic element.
+  - `intcovar` (optional): Interactive covariate.
+- **Outputs**: LOD scores across the genome for the specified `id`, optionally adjusted for `intcovar`.
 
-#### /mediate?dataset={dataset}&id={id}&marker_id={markerID}&dataset_mediate=${dataset_mediate}
- - Perform a mediation scan for the specified **id**, **dataset**, and **markerID**.  If **dataset_mediate** is specified, the mediation will be against that dataset.
+#### GET `/lodscansamples`
+- **Description**: Performs a LOD scan on an `id` for a specific chromosome, grouping samples by a covariate and returning a LOD scan for each unique covariate value.
+- **Inputs**:
+  - `dataset`: Dataset identifier.
+  - `id`: Identifier for the genetic element.
+  - `chrom`: Chromosome number.
+  - `intcovar`: Interactive covariate.
+- **Outputs**: LOD scores for each unique `intcovar` value, including sample identifiers and their corresponding scores.
 
-#### /foundercoefs?dataset={dataset}&id={id}&chrom={chromosome}&intcovar={covar}
- - Get the Founder coefficient data or the specified **id**, **dataset**, and **markerID**.  If **covar** is specified, that interactive covariate will be used.
-  
-#### /correlation?dataset={dataset}&id={id}&dataset_correlate={dataset_correlate}&intcovar={covar}
- - Perform a correlation scan for the specified **id** in **dataset**.  If **dataset_correlate** is specified, the correlation will be against that dataset.  If **covar** is specified, that interactive covariate will be used.
+#### GET `/expression`
+- **Description**: Retrieves expression data for an `id` in a dataset.
+- **Inputs**:
+  - `dataset`: Dataset identifier.
+  - `id`: Identifier for the gene or genetic element.
+- **Outputs**: Expression levels for the specified `id`, including sample identifiers and their corresponding expression values.
 
-#### /correlationplot?dataset={dataSet}&id={id}&dataset_correlate={dataset_correlate}&id_correlate={id_correlate}&intcovar={covar}
- - Perform a correlation scan for the specified **id** in **dataset** against the specified **id_correlate** in **dataset_correlate**.  If **covar** is specified, that interactive covariate will be used.  This is mainly for seeing how the two ids look when plotted.
+#### GET `/snpassoc`
+- **Description**: Conducts SNP association mapping for specified parameters.
+- **Inputs**:
+  - `dataset`: Dataset identifier.
+  - `id`: Identifier for the genetic element.
+  - `chrom`: Chromosome number.
+  - `location`: Genetic location for the association mapping.
+  - `window_size`: Window size for the analysis.
+- **Outputs**: Association scores for SNPs within the specified window, including p-values and effect sizes.
+
+#### GET `/mediate`
+- **Description**: Performs a mediation scan for an `id` and `markerID`, optionally against a different dataset.
+- **Inputs**:
+  - `dataset`: Primary dataset identifier.
+  - `id`: Identifier for the genetic element.
+  - `marker_id`: Marker identifier for the mediation analysis.
+  - `dataset_mediate` (optional): Dataset for mediation analysis.
+- **Outputs**: Mediation analysis results, showing the mediation effect of `marker_id` on the relationship between `id` and traits in the dataset(s).
+
+#### GET `/foundercoefs`
+- **Description**: Retrieves Founder coefficient data for specified parameters, optionally using an interactive covariate.
+- **Inputs**:
+  - `dataset`: Dataset identifier.
+  - `id`: Identifier for the genetic element.
+  - `chrom`: Chromosome number.
+  - `intcovar` (optional): Interactive covariate.
+- **Outputs**: Founder coefficients for the specified `id` and `chrom`, adjusted for `intcovar` if provided.
+
+#### GET `/correlation`
+- **Description**: Performs a correlation scan for an `id` in a dataset, optionally against another dataset and/or using an interactive covariate.
+- **Inputs**:
+  - `dataset`: Primary dataset identifier.
+  - `id`: Identifier for the genetic element.
+  - `dataset_correlate` (optional): Dataset for correlation analysis.
+  - `intcovar` (optional): Interactive covariate.
+- **Outputs**: Correlation coefficients between `id` and other genetic elements or traits, adjusted for `intcovar` if provided.
+
+#### GET `/correlationplot`
+- **Description**: Generates data for a correlation plot between two identifiers, optionally using an interactive covariate.
+- **Inputs**:
+  - `dataset`: Primary dataset identifier.
+  - `id`: Identifier for the primary genetic element.
+  - `dataset_correlate`: Dataset for the secondary genetic element.
+  - `id_correlate`: Identifier for the secondary genetic element.
+  - `intcovar` (optional): Interactive covariate.
+- **Outputs**: Data suitable for plotting the correlation between `id` and `id_correlate`, including correlation coefficients and significance levels, adjusted for `intcovar` if provided.
+
 
 
 
