@@ -57,46 +57,48 @@ This API facilitates interactions with a QTL analysis platform, providing endpoi
 - **Base URL**: The base URL for accessing the API endpoints will depend on the deployment environment. Replace `<base_url>` with the actual base URL of the API in the examples provided.
 
 ### Endpoints
-
-#### GET `/envinfo`
+#### Environment Information
+##### GET `/envinfo`
 - **Description**: Retrieves information about the R environment, including loaded files and their elements.
 - **Inputs**: None.
 - **Outputs**: A list of files loaded into the environment, along with the elements they contain.
-
-#### GET `/markers`
+#### Marker Information
+##### GET `/markers`
 - **Description**: Fetches all markers or markers for a specific chromosome.
 - **Inputs**: Optional query parameter `chrom` for filtering markers by chromosome.
 - **Outputs**: A list of markers, each including its location, allele information, and association data if filtered by chromosome.
 
-#### GET `/datasets`
+#### Dataset Details
+##### GET `/datasets`
 - **Description**: Provides details on the datasets loaded into the environment.
 - **Inputs**: None.
 - **Outputs**: Information about each dataset, including name, type, annotations, sample sizes, and other metadata.
 
-#### GET `/datasetsstats`
+##### GET `/datasetsstats`
 - **Description**: Retrieves statistical information about the datasets loaded.
 - **Inputs**: None.
 - **Outputs**: Statistical summaries for each dataset, such as mean, median, variance, and standard deviation of key metrics.
 
-#### GET `/rankings`
+#### Genetic Analysis
+##### GET `/rankings`
 - **Description**: Returns a ranking of gene annotations for use with SNP association.
 - **Inputs**: None.
 - **Outputs**: A list of gene annotations ranked based on their association strength, significance levels, and other relevant metrics.
 
-#### GET `/idexists`
+##### GET `/idexists`
 - **Description**: Checks if an `id` exists in the viewer or a specified dataset.
 - **Inputs**:
   - `id`: Identifier to check.
   - `dataset` (optional): Dataset to check the `id` against.
 - **Outputs**: Boolean indicating the existence of the `id`.
-
-#### GET `/lodpeaks`
+#### LOD Analysis
+##### GET `/lodpeaks`
 - **Description**: Fetches LOD peaks for a specified dataset.
 - **Inputs**: 
   - `dataset`: Identifier of the dataset.
 - **Outputs**: A list of LOD peaks, each including its location, score, and associated markers.
 
-#### GET `/lodscan`
+##### GET `/lodscan`
 - **Description**: Performs a LOD scan on an `id` in a dataset, optionally using an interactive covariate.
 - **Inputs**:
   - `dataset`: Dataset identifier.
@@ -104,7 +106,7 @@ This API facilitates interactions with a QTL analysis platform, providing endpoi
   - `intcovar` (optional): Interactive covariate.
 - **Outputs**: LOD scores across the genome for the specified `id`, optionally adjusted for `intcovar`.
 
-#### GET `/lodscansamples`
+##### GET `/lodscansamples`
 - **Description**: Performs a LOD scan on an `id` for a specific chromosome, grouping samples by a covariate and returning a LOD scan for each unique covariate value.
 - **Inputs**:
   - `dataset`: Dataset identifier.
@@ -113,14 +115,15 @@ This API facilitates interactions with a QTL analysis platform, providing endpoi
   - `intcovar`: Interactive covariate.
 - **Outputs**: LOD scores for each unique `intcovar` value, including sample identifiers and their corresponding scores.
 
-#### GET `/expression`
+#### Expression and Association
+##### GET `/expression`
 - **Description**: Retrieves expression data for an `id` in a dataset.
 - **Inputs**:
   - `dataset`: Dataset identifier.
   - `id`: Identifier for the gene or genetic element.
 - **Outputs**: Expression levels for the specified `id`, including sample identifiers and their corresponding expression values.
 
-#### GET `/snpassoc`
+##### GET `/snpassoc`
 - **Description**: Conducts SNP association mapping for specified parameters.
 - **Inputs**:
   - `dataset`: Dataset identifier.
@@ -129,8 +132,8 @@ This API facilitates interactions with a QTL analysis platform, providing endpoi
   - `location`: Genetic location for the association mapping.
   - `window_size`: Window size for the analysis.
 - **Outputs**: Association scores for SNPs within the specified window, including p-values and effect sizes.
-
-#### GET `/mediate`
+#### Advanced Analysis
+##### GET `/mediate`
 - **Description**: Performs a mediation scan for an `id` and `markerID`, optionally against a different dataset.
 - **Inputs**:
   - `dataset`: Primary dataset identifier.
@@ -139,7 +142,7 @@ This API facilitates interactions with a QTL analysis platform, providing endpoi
   - `dataset_mediate` (optional): Dataset for mediation analysis.
 - **Outputs**: Mediation analysis results, showing the mediation effect of `marker_id` on the relationship between `id` and traits in the dataset(s).
 
-#### GET `/foundercoefs`
+##### GET `/foundercoefs`
 - **Description**: Retrieves Founder coefficient data for specified parameters, optionally using an interactive covariate.
 - **Inputs**:
   - `dataset`: Dataset identifier.
@@ -148,7 +151,7 @@ This API facilitates interactions with a QTL analysis platform, providing endpoi
   - `intcovar` (optional): Interactive covariate.
 - **Outputs**: Founder coefficients for the specified `id` and `chrom`, adjusted for `intcovar` if provided.
 
-#### GET `/correlation`
+##### GET `/correlation`
 - **Description**: Performs a correlation scan for an `id` in a dataset, optionally against another dataset and/or using an interactive covariate.
 - **Inputs**:
   - `dataset`: Primary dataset identifier.
@@ -157,7 +160,7 @@ This API facilitates interactions with a QTL analysis platform, providing endpoi
   - `intcovar` (optional): Interactive covariate.
 - **Outputs**: Correlation coefficients between `id` and other genetic elements or traits, adjusted for `intcovar` if provided.
 
-#### GET `/correlationplot`
+##### GET `/correlationplot`
 - **Description**: Generates data for a correlation plot between two identifiers, optionally using an interactive covariate.
 - **Inputs**:
   - `dataset`: Primary dataset identifier.
