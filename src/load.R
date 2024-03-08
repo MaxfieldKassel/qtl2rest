@@ -16,89 +16,68 @@
 #
 # #############################################################################
 
-# set a variable called debug_mode to TRUE for step 1 above.
+# Initialization message indicating the beginning of the data files loading process.
+message("Initiating loading of data files...")
 
-message("Finding the data files to load...")
+# Define variables for directories
+rdata_dir <- "/app/qtl2rest/data/rdata"
+sqlite_dir <- "/app/qtl2rest/data/sqlite"
+
+# Initialize list to keep track of environment elements loaded
 envElements <- list()
 
-rdata_files <- list.files(
-    "/app/qtl2rest/data/rdata",
-    "\\.RData$",
-    ignore.case = TRUE,
-    full.names = TRUE
-)
-
-if (length(rdata_files) >= 0) {
-    for (f in rdata_files) {
-        message("Loading the RDATA file:", f)
-        tempElems <- load(f, .GlobalEnv)
-        elem <- list (
-            fileName = basename(f),
-            fileSize = file.size(f),
-            elements = sort(tempElems)
-        )
-
-        envElements <- c(envElements, list(elem))
-    }
+# Load .RData files
+rdata_files <- list.files(rdata_dir, pattern = "\\.RData$", ignore.case = TRUE, full.names = TRUE)
+for (f in rdata_files) {
+  message("Loading RDATA file:", f)
+  loaded_names <- load(f, .GlobalEnv)
+  envElements <- c(envElements, list(
+    fileName = basename(f),
+    fileSize = file.size(f),
+    elements = sort(loaded_names)
+  ))
 }
 
-rds_files <- list.files(
-    "/app/qtl2rest/data/rdata",
-    "\\.Rds$",
-    ignore.case = TRUE,
-    full.names = TRUE
-)
+# Load .RDS files
+rds_files <- list.files(rdata_dir, pattern = "\\.Rds$", ignore.case = TRUE, full.names = TRUE)
+for (f in rds_files) {
+  message("Loading RDS file:", f)
+  elemName <- tools::file_path_sans_ext(basename(f))
+  data <- readRDS(f)
 
-if (length(rds_files) >= 0) {
-    for (f in rds_files) {
-        elemName <- tools::file_path_sans_ext(basename(f))
+  # Dataset validation and renaming
+  if (exists('annot.samples', data) && exists('covar.info', data) &&
+      exists('datatype', data) && exists('data', data) &&
+      substr(elemName, 1, 8) != "dataset.") {
+    elemName <- paste0("dataset.", elemName)
+  }
 
-        message("Loading the RDS file: ", f, " into ", elemName)
-        temp <- readRDS(f)
+  assign(elemName, data, .GlobalEnv)
 
-        # check for dataset
-        if (exists('annot.samples', temp) &&
-            exists('covar.info', temp) &&
-            exists('datatype', temp) &&
-            exists('data', temp)) {
-
-            if ("dataset." != tolower(substr(elemName, 1, 8))) {
-                # making the element start with "dataset." confirms a dataset
-                elemName <- paste0("dataset.", elemName)
-            }
-        }
-
-        assign(elemName, temp, .GlobalEnv)
-
-        elem <- list(
-            fileName = basename(f),
-            fileSize = file.size(f),
-            elements = elemName
-        )
-
-        envElements <- c(envElements, list(elem))
-    }
+  envElements <- c(envElements, list(
+    fileName = basename(f),
+    fileSize = file.size(f),
+    elements = elemName
+  ))
 }
 
-if ((length(rdata_files) == 0) && (length(rds_files) == 0)) {
-    stop("There needs to be .RData/.Rds file(s) in /app/qtl2rest/data/rdata")
+# Error handling for file existence
+if (length(rdata_files) == 0 && length(rds_files) == 0) {
+  stop("No .RData or .Rds files found in", rdata_dir)
 }
 
-rm(f, elem, temp, rdata_files, rds_files)
-
-db_file <- list.files(
-    "/app/qtl2rest/data/sqlite",
-    "\\.sqlite$",
-    ignore.case = TRUE,
-    full.names = TRUE
-)
-
+# Load SQLite database file
+db_file <- list.files(sqlite_dir, pattern = "\\.sqlite$", ignore.case = TRUE, full.names = TRUE)
 if (length(db_file) == 0) {
-    stop("There needs to be an .sqlite file in /app/qtl2rest/data/sqlite")
-} else if (length(db_file) > 1) {
-    stop("There needs to be only 1 .sqlite file in /app/qtl2rest/data/sqlite")
+  stop("No .sqlite file found in", sqlite_dir)
+}
+
+if(length(db_file) > 1) {
+  stop("More than one .sqlite file found in", sqlite_dir)
 }
 
 message("Using SNP db file:", db_file)
 
+# Cleanup: Remove temporary variables to keep the environment clean
+rm(f, data, rdata_files, rds_files, db_file)
 
